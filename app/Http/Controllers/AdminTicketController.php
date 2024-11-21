@@ -15,6 +15,25 @@ class AdminTicketController extends Controller
 
         $tickets = Ticket::query();
 
+        if ($request->status) {
+            $tickets->where('status', $request->status);
+        }
+
+        if ($request->created_by) {
+            $tickets->where('created_by', $request->created_by);
+        }
+
+        if ($request->search) {
+            $tickets->where(function ($query) use ($request) {
+                $query->where('title', 'like', '%' . $request->search . '%')
+                    ->orWhere('description', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        if ($request->start_date && $request->end_date) {
+            $tickets->whereBetween('created_at', [$request->start_date, $request->end_date]);
+        }
+
         return response()->json(
             $tickets->simplePaginate(10),
         );
