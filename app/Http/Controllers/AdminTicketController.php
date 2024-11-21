@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NewMessageAddedEvent;
+use App\Events\TicketStatusUpdatedEvent;
 use App\Http\Requests\StoreMessageRequest;
 use App\Http\Requests\UpdateTicketRequest;
 use App\Http\Resources\TicketResource;
+use App\Mail\NewMessageAddedMail;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
+use Mail;
 
 class AdminTicketController extends Controller
 {
@@ -41,6 +45,7 @@ class AdminTicketController extends Controller
     public function storeMessage(StoreMessageRequest $request, Ticket $ticket)
     {
         $ticket->messages()->create($request->validated() + ['sender_id' => auth()->id()]);
+        new NewMessageAddedEvent($ticket, $request->message);
         return response()->json([
             'message' => 'Message added successfully.',
             'ticket' => TicketResource::make($ticket->load('messages')), // Return the ticket with its messages
@@ -49,6 +54,7 @@ class AdminTicketController extends Controller
     public function update(UpdateTicketRequest $request, Ticket $ticket)
     {
         $ticket->update($request->validated());
+        new TicketStatusUpdatedEvent($ticket);
         return response()->json(['message' => 'Ticket updated successfully']);
     }
 }
