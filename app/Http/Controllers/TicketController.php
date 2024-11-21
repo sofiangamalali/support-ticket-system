@@ -11,12 +11,16 @@ class TicketController extends Controller
 {
     public function index()
     {
+
         return response()->json(TicketResource::collection(Ticket::Where('created_by', auth()->id())->get()));
     }
     public function store(StoreTicketRequest $request)
     {
+
+
         $ticket = Ticket::create([
             'created_by' => auth()->id(),
+            'status' => '',
         ] + $request->validated());
 
         return response()->json([
@@ -26,7 +30,7 @@ class TicketController extends Controller
 
     }
     public function show(Ticket $ticket)
-    {
+    {   
         if (auth()->id() !== $ticket->created_by) {
             return response()->json([
                 'message' => 'Unauthorized to view this ticket.'
