@@ -20,7 +20,7 @@ class TicketController extends Controller
 
         $ticket = Ticket::create([
             'created_by' => auth()->id(),
-            'status' => '',
+            'status' => 'open',
         ] + $request->validated());
 
         return response()->json([

@@ -27,11 +27,11 @@ Route::group([
 });
 
 Route::group([
-    'middleware' => ['auth:sanctum', 'role:admin'],
+    'middleware' => ['auth:sanctum'],
     'prefix' => 'admin'
 ], function () {
     Route::get('/tickets', [AdminTicketController::class, 'index']);
-    Route::post('/tickets/{id}/messages', [AdminTicketController::class, 'storeMessage']);
-    Route::patch('/tickets/{id}', [AdminTicketController::class, 'update']);
+    Route::post('/tickets/{ticket}/messages', [AdminTicketController::class, 'storeMessage']);
+    Route::patch('/tickets/{ticket}', [AdminTicketController::class, 'update']);
 });
 
